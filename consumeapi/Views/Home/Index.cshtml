@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+</head>
+<body>
+    <input type="text" id="Name" />
+    <input type="text" id="StartLocation" />
+    <input type="text" id="EndLocation" />
+    <button type="submit" onclick="AddReservation()">Add</button>
+    <table id="apiTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Start Location</th>
+                <th>End Location</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script type="text/javascript">
+        function AddReservation() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "https://localhost:44389/api/reservation", true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            xhttp.setRequestHeader("Key", "Secret@123");
+            var obj = {
+                Id: 0,
+                Name: document.getElementById("Name").value,
+                StartLocation: document.getElementById("StartLocation").value,
+                EndLocation: document.getElementById("EndLocation").value
+            };
+            xhttp.send(JSON.stringify(obj));
+            xhttp.onreadystatechange = () => {
+                if (this.readyState == 4 && this.status == 200) {
+                    var response = JSON.parse(this.responseText);
+                    var tbody = document.getElementById("apiTable").querySelector("tbody");
+                    tbody.innerHTML = "<tr><td>" + response.Id + "</td><td>"
+                        + response.Name + "</td><td>" + response.StartLocation + "</td><td>"
+                        + response.EndLocation + "</td></tr>";
+
+                }
+            };
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <input type="file" id="File" />
+    <button id="AddButton" onclick="UploadFile"></button>
+    <script type="text/javascript">
+        function UploadFile() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "https://localhost:44389/api/Reservation/UploadFile", true);
+            data = new FormData();
+            data.append("file", document.getElementById("File").files[0]);
+            xhttp.send(data);
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    alert(this.response);
+                   
+                }
+            }
+        }
+
+    </script>
+</body>
+</html>

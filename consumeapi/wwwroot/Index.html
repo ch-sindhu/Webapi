@@ -1,0 +1,63 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+</head>
+<body>
+    
+    Name:
+    <input type="text" id="Name" /><br />
+    StartLocation:
+    <input type="text" id="StartLocation" /><br />
+    EndLocation:
+    <input type="text" id="EndLocation" /><br />
+        <br />
+    <button type="submit" onclick="AddReservation()" value="Submit">Add</button>
+    
+    <table id="apiTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Start Location</th>
+                <th>End Location</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script type="text/javascript">
+        function AddReservation() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "https://localhost:44389/api/reservation", true);
+            xhttp.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+            xhttp.setRequestHeader("Key", "Secret@123");
+            var obj = {
+               Id: 0,
+                Name: document.getElementById("Name").value,
+                StartLocation: document.getElementById("StartLocation").value,
+                EndLocation: document.getElementById("EndLocation").value
+            };
+            xhttp.send(JSON.stringify(obj));
+            
+            xhttp.onreadystatechange = () => {
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                    var response = JSON.parse(xhttp.responseText)
+                        var tbody = document.getElementById('apiTable').querySelector('tbody');
+                        tbody.innerHTML = "<tr><td>" + response.id + "</td><td>"+ response.name + "</td><td>" + response.startLocation + "</td><td>"+ response.endLocation + "</td></tr>";
+
+                    }
+                    //var tbody = document.getElementById('apiTable').querySelector('tbody')[0];
+                    //tbody.innerHTML = "<tr><td>" + response.Id + "</td><td>"
+                    //    + response.Name + "</td><td>" + response.StartLocation + "</td><td>"
+                    //    + response.EndLocation + "</td></tr>";
+
+                }
+            };
+            
+        
+    </script>
+</body>
+</html>
