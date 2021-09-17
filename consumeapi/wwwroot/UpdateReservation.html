@@ -3,31 +3,93 @@
 <head>
     <meta charset="utf-8" />
     <title></title>
+    <script src="lib/jquery/jquery.js"></script>
+    <link href="lib/twitter-bootstrap/css/bootstrap.css" rel="stylesheet" />
 </head>
 <body>
-     ID:
-    <input type="text" id="Id" readonly />
-    <br />
-     Name:
-    <input type="text" id="Name" />
-    <br />
-    StartLocation:
-    <input type="text" id="StartLocation" />
-    <br />
-    EndLocation:
-    <input type="text" id="EndLocation" />
-    <br />
-    <button type="submit" onclick="UpdateReservation()">Update</button>
-    <table id="apiTable">
-      <thead>
-          <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>StartLocation</th>
-              <th>EndLocation</th>
-          </tr>
-      </thead>
-        <tbody></tbody>
-    </table>
- </body>
+    <form method="post" id="myForm">
+        <div class="container-fluid">
+
+            <div class="form-group">
+                <label for="id">ID:</label>
+                <input type="text" id="Id" name="Id" class="form-control" readonly />
+                <br />
+            </div>
+            <div class="form-group">
+                <label for="Name">Name:</label>
+                <input type="text" id="Name" name="Name" class="form-control" />
+                <br />
+            </div>
+            <div class="form-control">
+                <label for="StartLocation">StartLocation:</label>
+                <input type="text" id="StartLocation" name="StartLocation" class="form-control" />
+                <br />
+            </div>
+            <div class="form-control">
+                <label for="EndLocation">EndLocation:</label>
+                <input type="text" id="EndLocation" name="EndLocation" class="form-control" />
+                <br />
+            </div>
+            <div class="text-center panel-body">
+                <button type="submit" onclick="UpdateReservation()">Update</button>
+            </div>
+            <div style="display:none">
+             <table id="apiTable">
+                <thead><tr><th>ID</th><th>Name</th><th>StartLocation</th><th>EndLocation</th></tr></thead>
+                <tbody></tbody>
+             </table>
+           </div>
+    </div>
+    </form>
+    <script type="text/javascript">
+        GetReservation();
+        function UpdateReservation() {
+            try {
+                let params = (new URL(document.location)).searchParams;
+                let id = params.get('id');
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (xhttp.readyState == 4 && xhttp.status == 200) {
+                        var response = JSON.parse(xhttp.responseText);
+                        var tbody = document.getElementById("apiTable").querySelector("tbody");
+                        tbody.innerHTML = "<tr><td>" + response.id + "</td><td>" + response.name + "</td><td>" + response.startLocation + "</td><td>" + response.endLocation + "</td></tr>";
+                        document.getElementById("apiTable").style.display = "block";
+                        alert("successful");
+                    }
+                };
+                xhttp.open("PUT", "https://localhost:44389/api/reservation/" + id, true);
+
+                Data = new FormData();
+                Data.append("Id", document.getElementById("Id").value);
+                Data.append("Name", document.getElementById("Name").value);
+                Data.append("StartLocation", document.getElementById("StartLocation").value);
+                Data.append("EndLocation", document.getElementById("EndLocation").value);
+                xhttp.send(Data);
+
+
+            }
+            catch (error) {
+                console.log(error.message);
+            }
+        }
+        function GetReservation() {
+            let params = (new URL(document.location)).searchParams;
+            let id = params.get('id');
+            var xhttp = new XMLHttpRequest();
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var response = JSON.parse(xhttp.responseText);
+                    document.getElementById("Id").value = response.id;
+                    document.getElementById("Name").value = response.name;
+                    document.getElementById("StartLocation").value = response.startLocation;
+                    document.getElementById("EndLocation").value = response.endLocation;
+                }
+            };
+            xhttp.open("GET", "https://localhost:44389/api/reservation/" + id, true);
+            xhttp.send();
+        }
+    </script>
+</body>
 </html>

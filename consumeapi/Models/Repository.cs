@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,39 +10,71 @@ namespace consumeapi.Models
 {
     public class Repository : IRepository
     {
-        private Dictionary<int, Reservation> items;
-        public Repository()
+        private readonly ReservationContext _context;
+
+       
+
+        public Repository(ReservationContext context)
         {
-            items = new Dictionary<int, Reservation>();
-            new List<Reservation>
-            {
-                new Reservation{Id=1,Name="john",StartLocation="NewYork",EndLocation="Beijing"},
-                new Reservation{Id=2,Name="Doe",StartLocation="Boston",EndLocation="NewYork"},
-                new Reservation{Id=3,Name="sai",StartLocation="London",EndLocation="paris"}
-            }.ForEach(r => AddReservation(r));
+            _context = context;
         }
 
-        public Reservation this[int id] => items.ContainsKey(id)?items[id]:null;
-
-
-        public IEnumerable<Reservation> Reservations => items.Values;
-
-        public Reservation AddReservation(Reservation reservation)
+        public async Task<Reservation> Get(int id)
         {
-            if(reservation.Id==0)
-            {
-                int key = items.Count;
-                while (items.ContainsKey(key)) { key++; }
-                reservation.Id = key;
-            }
-            items[reservation.Id] = reservation;
+            return await _context.Reservations.FindAsync(id);
+        }
+
+
+        public async Task<IEnumerable<Reservation>> Get()
+        {
+            return await _context.Reservations.ToListAsync();
+        }
+
+        public async Task<Reservation> AddReservation(Reservation reservation)
+        {
+            _context.Reservations.Add(reservation);
+            await _context.SaveChangesAsync();
             return reservation;
         }
 
-        public void DeleteReservation(int id) => items.Remove(id);
+        public async Task DeleteReservation(int id)
+        {
+            var todelete =await _context.Reservations.FindAsync(id);
+            _context.RemoveRange(todelete);
+            await _context.SaveChangesAsync();
+            //var todelete = new Reservation() { Id = id };
+            //_context.Reservations.Remove(todelete);
+            //await _context.SaveChangesAsync();
 
 
-        public Reservation UpdateReservation(Reservation reservation) => AddReservation(reservation);
-      
+        }
+
+
+        public async Task UpdateReservation(int id,Reservation reservation)
+        {
+            //_context.Entry(reservation).State = EntityState.Modified;
+            //    await _context.SaveChangesAsync();
+            //    return reservation;
+            var res = new Reservation()
+            {
+                Id=reservation.Id,
+                Name = reservation.Name,
+                StartLocation=reservation.StartLocation,
+                EndLocation=reservation.EndLocation
+
+            };
+            _context.Reservations.Update(res);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdatePatchReservation(int id, [FromBody] JsonPatchDocument Reservation)
+        {
+            var res = await _context.Reservations.FindAsync(id);
+            if(res!=null)
+            {
+                Reservation.ApplyTo(res);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

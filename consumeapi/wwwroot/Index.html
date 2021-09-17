@@ -46,7 +46,7 @@
                 if (xhttp.readyState == 4 && xhttp.status == 200) {
                     var response = JSON.parse(xhttp.responseText)
                         var tbody = document.getElementById('apiTable').querySelector('tbody');
-                        tbody.innerHTML = "<tr><td>" + response.id + "</td><td>"+ response.name + "</td><td>" + response.startLocation + "</td><td>"+ response.endLocation + "</td></tr>";
+                        tbody.innerHTML += "<tr><td>" + response.id + "</td><td>"+ response.name + "</td><td>" + response.startLocation + "</td><td>"+ response.endLocation + "</td></tr>";
 
                     }
                     //var tbody = document.getElementById('apiTable').querySelector('tbody')[0];

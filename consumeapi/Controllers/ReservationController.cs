@@ -15,53 +15,72 @@ namespace consumeapi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReservationController : ControllerBase
+    public class ReservationController : ControllerBase                /*ApiController */   /*ControllerBase*/
     {
-        private IRepository repository;
-
+        private readonly IRepository _repository;
         private readonly IHostingEnvironment _hostingEnvironment; 
 
-        public ReservationController(IRepository repo,IHostingEnvironment hostingEnvironment)
+        public ReservationController(IRepository  repository,IHostingEnvironment hostingEnvironment)
         {
-            repository = repo;
+            _repository = repository;
             _hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet]
-        public IEnumerable<Reservation> GetReservation()
+        public async Task<IEnumerable<Reservation>> Get()
         {
-            var reservation= repository.Reservations;
-            return reservation;
+            
+            return await _repository.Get();
         }
         [HttpGet("{id}")]
-        public ActionResult<Reservation> Get(int id)
-        {
+        public async Task<ActionResult<Reservation>> Get(int id)
+       {
             if (id == 0)
+            {
                 return BadRequest("value must be passed in the request body.");
-            return Ok(repository[id]);
+            }
+                
+            return await _repository.Get(id);
         }
         [HttpPost]
-        public Reservation Post([FromBody] Reservation res) => repository.AddReservation(new Reservation
+        public async Task<ActionResult<Reservation>> Post([FromBody] Reservation res)
         {
-            Name=res.Name,
-            StartLocation=res.StartLocation,
-            EndLocation=res.EndLocation
-        });
-        [HttpPut]
-        public Reservation Put([FromBody] Reservation res) => repository.UpdateReservation(res);
-        [HttpPatch]
-        public StatusCodeResult Patch(int id, [FromBody] JsonPatchDocument<Reservation> patch)
+             var newres=await _repository.AddReservation(res);
+            return CreatedAtAction(nameof(Get), new { id = newres.Id }, newres);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult>  Put([FromRoute]int id,[FromForm] Reservation res)
         {
-            var res = (Reservation)((OkObjectResult)Get(id).Result).Value;
-            if(res!=null)
-            {
-                patch.ApplyTo(res);
-                return Ok();
-            }
-            return NotFound();
+            await _repository.UpdateReservation(id,res);
+            return Ok();
+        }
+        [HttpPatch("{id}")]
+        public async  Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument Reservation )
+        {
+            await _repository.UpdatePatchReservation(id, Reservation);
+            return Ok();
         }
         [HttpDelete("{id}")]
-        public void Delete(int id) => repository.DeleteReservation(id);
+        public async Task<ActionResult> Delete(int id)
+        {
+            try
+            {
+                var restodelete = await _repository.Get(id);
+                if (restodelete == null)
+                     return NotFound();
+                  await  _repository.DeleteReservation(id);
+                return NoContent();
+                
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            return Ok();
+
+            
+        }
         [HttpPost("UploadFile")]
         public async Task<string> UploadFile([FromForm] IFormFile file)
         {
@@ -71,10 +90,6 @@ namespace consumeapi.Controllers
                 await file.CopyToAsync(stream);
             }
             return "https://localhost:44389/Images/" + file.FileName;
-
-
-
-
         }
 
     }

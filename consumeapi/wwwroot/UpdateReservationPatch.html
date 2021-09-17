@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div class="container-fluid">
+
+        <div class="form-control">
+            <label for="id">ID:</label>
+            <input type="text" id="Id" readonly class="form-control" />
+            <br />
+        </div>
+        <div class="form-control">
+            <label for="Name">Name:</label>
+            <input type="text" id="Name" class="form-control" />
+            <br />
+        </div>
+        <div class="form-control">
+            <label for="StartLocation">StartLocation:</label>
+            <input type="text" id="StartLocation" class="form-control" />
+            <br />
+        </div>
+        <div class="form-control">
+            <label for="EndLocation">EndLocation:</label>
+            <input type="text" id="EndLocation" class="form-control" />
+            <br />
+        </div>
+        <div class="form-group">
+        <button type="submit" class="btn btn-sm btn-primary"onclick="UpdateReservation()">Update</button>
+        </div>
+    </div>
+    <script type="text/javascript">
+        GetReservation()
+        function GetReservation() {
+            let params = (new URL(document.location)).searchParams;
+            let id = params.get('id');
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var response = JSON.parse(xhttp.responseText);
+                    document.getElementById("Id").value = response.id;
+                    document.getElementById("Name").value = response.name;
+                    document.getElementById("StartLocation").value = response.startLocation;
+                    document.getElementById("EndLocation").value = response.endLocation;
+                }
+            };
+            xhttp.open("GET", "https://localhost:44389/api/reservation/" + id, true);
+            xhttp.send();
+        }
+        function UpdateReservation() {
+            var xhttp = new XMLHttpRequest();
+            try {
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        alert("successful");
+                        window.location.href = "AllReservation.html";
+                    }
+
+                };
+                let params = (new URL(document.location)).searchParams;
+                let id = params.get("id");
+                var data = JSON.stringify([
+                    {
+                        op: "replace",
+                        path: "Name",
+                        value: document.getElementById("Name").value,
+                    },
+                    {
+                        op: "replace",
+                        path: "StartLocation",
+                        value: document.getElementById("StartLocation").value,
+                    },
+                    {
+                        op: "replace",
+                        path: "EndLocation",
+                        value: document.getElementById("EndLocation").value,
+                    }
+                ]);
+                xhttp.open("PATCH", "https://localhost:44389/api/reservation/" + id, true);
+                xhttp.setRequestHeader("Content-Type", "application/json");
+                xhttp.setRequestHeader("Accept", "application/json");
+                xhttp.send(data);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -2,28 +2,36 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title></title>
-
+    <title>Add Reservation</title>
+    <script src="lib/jquery/jquery.js"></script>
+    <link href="lib/twitter-bootstrap/css/bootstrap.css" rel="stylesheet" />
 </head>
 <body>
-    Name:
-    <input type="text" id="Name" /><br />
-    StartLocation:
-    <input type="text" id="StartLocation" /><br />
-    EndLocation:
-    <input type="text" id="EndLocation" /><br />
-    <button type="submit" onclick="AddReservation()">Add</button>
-    <table id="apiTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Start Location</th>
-                <th>End Location</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <div class="container-fluid">
+        <h2>Add Reservation<a href="AllReservation.html" class="btn btn-sm btn-secondary">Back</a></h2>
+        <div class="form-group">
+            <label for="Name">Name:</label>
+            <input type="text" id="Name" class="form-control" /><br />
+        </div>
+        <div class="form-group">
+            <label for="StartLocation">StartLocation</label>
+            <input type="text" id="StartLocation" class="form-control" /><br />
+        </div>
+        <div class="form-group"></div>
+        <label for="EndLocation">EndLocation</label>
+        <input type="text" id="EndLocation" class="form-control" /><br />
+        </div>
+        <div class="text-center panel-body">
+        <button type="submit" onclick="AddReservation()">Add</button>
+        </div>
+        <div style="display:none">
+           <table id="apiTable" class="table table-sm table-striped table-bordered m-2">
+           <thead><tr><th>ID</th><th>Name</th><th>Start Location</th><th>End Location</th></tr></thead>
+           <tbody>
+           </tbody>
+           </table>
+        </div>
+    </div>
     <script type="text/javascript">
         function AddReservation() {
             var xhttp = new XMLHttpRequest();
@@ -36,12 +44,12 @@
                 StartLocation: document.getElementById("StartLocation").value,
                 EndLocation: document.getElementById("EndLocation").value
             };
-            
+
             xhttp.onreadystatechange = () => {
                 if (xhttp.readyState == 4 && xhttp.status == 200) {
-                    var response = JSON.parse(xhttp.responseText);
+                    var response = JSON.parse(this.responseText);
                     var tbody = document.getElementById("apiTable").querySelector("tbody");
-                    tbody.innerHTML = "<tr><td>" + response.id + "</td><td>"+ response.name + "</td><td>" + response.startLocation + "</td><td>"+ response.endLocation + "</td></tr>";
+                    tbody.innerHTML = "<tr><td>" + response.id + "</td><td>" + response.name + "</td><td>" + response.startLocation + "</td><td>" + response.endLocation + "</td></tr>";
 
                 }
             };

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,10 +9,11 @@ namespace consumeapi.Models
 {
    public  interface IRepository
     {
-        IEnumerable<Reservation> Reservations { get; }
-        Reservation this[int id] { get; }
-        Reservation AddReservation(Reservation reservation);
-        Reservation UpdateReservation(Reservation reservation);
-        void DeleteReservation(int id);
+         Task<Reservation> Get(int id);
+         Task<IEnumerable<Reservation>> Get();
+        Task<Reservation> AddReservation(Reservation reservation);
+        Task DeleteReservation(int id);
+        Task UpdateReservation(int id,Reservation reservation);
+        Task UpdatePatchReservation(int id, [FromBody] JsonPatchDocument Reservation);
     }
 }

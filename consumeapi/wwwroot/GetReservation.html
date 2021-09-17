@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>GetReservation</title>
+    <script src="lib/jquery/jquery.js"></script>
+    <link href="lib/twitter-bootstrap/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container-fluid">
+        <h2>GetReservationById<a href="AllReservation.html" class="btn btn-sm btn-primary">Back</a></h2>
+        <div class="form-group">
+            <label for="id">Id:</label>
+            <input type="text" class="form-Control" id="Id" />
+        </div>
+        <div class="text-center panel-body">
+        <button id="GetButton" onclick="GetReservation()" class="btn btn-sm btn-primary">GetReservation</button>
+        </div>
+    <table id="apiTable" class="table table-sm table-striped table-bordered m-2">
+        <thead><tr><th>Id</th><th>Name</th><th>StartLocation</th><th>EndLocation</th></tr></thead>
+        <tbody></tbody>
+    </table>
+    </div>
+    <script type="text/javascript">
+        function GetReservation() {
+            var xhttp = new XMLHttpRequest();
+            var newid = document.getElementById("Id").value;
+            xhttp.open("GET", "https://localhost:44389/api/reservation/" + newid, true);
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var response = JSON.parse(this.responseText);
+                    var tbody = document.getElementById("apiTable").querySelector("tbody");
+                    tbody.innerHTML += "<tr><td>" + response.id + "</td><td>" + response.name + "</td><td>" + response.startLocation + "</td><td>" + response.endLocation + "</td></tr>";
+                }
+            };
+            xhttp.send();
+        }
+    </script>
+</body>
+</html>

@@ -2,11 +2,21 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <title>Add File</title>
+    <script src="lib/jquery/jquery.js"></script>
+    <link href="lib/twitter-bootstrap/css/bootstrap.css" rel="stylesheet" />
 </head>
 <body>
-    <input type="file" id="File" />
-    <button id="AddButton" onclick="UploadFile"></button>
+    <div class="container-fluid">
+        <h2>Add File</h2>
+        <P>
+            <a href="AllReservation.html" class="btn btn-sm btn-primary">Back</a>
+        </P>
+        <input type="file" id="File" />
+        <div class="text-center panel-body">
+        <button type="submit" id="AddButton" onclick="UploadFile()" class="btn btn-sm btn-primary">Add</button>
+        </div>
+    </div>
     <script type="text/javascript">
         function UploadFile() {
             var xhttp = new XMLHttpRequest();
@@ -18,7 +28,7 @@
                 if (this.readyState == 4 && this.status == 200) {
 
                     alert(this.response);
-                   
+
                 }
             }
         }
